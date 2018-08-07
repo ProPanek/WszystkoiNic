@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="lib/gmap3.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8hR3r1EwxjHf3rQP3q-QCaJfI8u9Yfc8&region=PL"></script>
+    <style>
+        html{
+            width: 100%;
+            height: 100%;
+        }
+        *{
+            margin:0;
+            padding:0;
+          
+        }
+        div #marker{
+            border-bottom: 1px solid black;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $("#mapDiv").gmap3({
+                map: {
+                    options: {
+                        center: [50.046393, 19.922188],
+                        zoom: 18,
+                        disableDefaultUI: true
+
+                    },
+                    marker: {
+                        options: {
+                            draggable:true 
+                        },
+                        latLng: [50.046393, 19.922188]
+                    },
+                }
+            })
+            $("#slide").on("dragstart", function(event){
+                event.preventDefault()
+                $("body").on("mousemove", function(event){
+                    $("#mapDiv").css("width", event.clientX +"px")
+                    $("#panel").css("width", window.innerWidth - event.clientX -30 +"px")
+                }).on("mouseup", function(){
+                    $("body").off("mousemove")
+                })
+            })
+        })
+    </script>
+</head>
+<body>
+    <div id="mapDiv" style="width:49.5%; height:100vh; display: inline-block;" >
+    </div>
+    <div id="slide" draggable="true" style="width:6px; background-color:blue; height:100vh; top:0px; left:49.5%; display: inline-block; cursor:col-resize;" ></div>
+    <div id="panel" style=" height:100%; width: 49.5%; background-color:grey; top:0px; left:50%; display: inline-block; vertical-align:top; ">
+        
+    </div>
+</body>
+</html>

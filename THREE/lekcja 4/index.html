@@ -1,0 +1,265 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="three.js"></script>
+    <script src="orbit.js"></script>
+
+    <script>
+        window.addEventListener("load", function () {
+
+            var fov = 90; //GLOBALS
+            var color = 0x000000;
+            var width = innerWidth-10;
+            var height = innerHeight-10;
+            var mixer, mixerclones;
+            var tab = []
+            var mixertab = []
+
+
+
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(
+                fov, // k�t patrzenia kamery (FOV - field of view)
+                4 / 3, // proporcje widoku, powinny odpowiada� proporjom naszego ekranu przegl�darki
+                0.1, // minimalna renderowana odleg�o��
+                10000 // maxymalna renderowana odleg�o��
+            );
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor(color);
+            renderer.setSize(width, height);
+            camera.position.x = -155;
+            camera.position.y = 300;
+            camera.position.z = 239;
+
+
+
+
+            var axis = new THREE.AxisHelper(400);    // 200 - wielkość
+            scene.add(axis);
+
+
+            var plane = new THREE.PlaneBufferGeometry(2048, 2048, 32)
+            var plane_material = new THREE.MeshBasicMaterial( {side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture('mats/G.jpg')} );
+            var plane_mesh = new THREE.Mesh(plane, plane_material);
+            plane_mesh.rotation.set(300,0,0)
+            plane_mesh.position.set(0,-0.01,0)
+            plane_mesh.material.map.repeat.set(16, 16); //gęstość powtarzania
+            plane_mesh.material.map.wrapS = plane_mesh.material.map.wrapT = THREE.RepeatWrapping; // powtarzanie w obu kierunkach
+            scene.add(plane_mesh);
+
+
+            var modelMaterial = new THREE.MeshBasicMaterial(
+             {
+                 map: THREE.ImageUtils.loadTexture("models/skinverts2.png"),
+                 morphTargets: true,
+
+             });
+            loader = new THREE.JSONLoader();
+
+            //funkcja zwraca obiekt geometry, nie mesh
+
+            loader.load('models/tris.js', function (geometry) {
+
+                meshModel = new THREE.Mesh(geometry, modelMaterial)
+                meshModel.name = "player";
+                meshModel.rotation.y = 0; // ustaw obrót modelu
+                meshModel.position.y = 24; // ustaw pozycje modelu
+                meshModel.scale.set(1,1,1); // ustaw skalę modelu
+
+                //console.log(geometry.animations)
+                mixer = new THREE.AnimationMixer(meshModel);
+
+                var box = new THREE.Box3().setFromObject(meshModel);
+                console.log(box.getSize().y);
+                console.log(box.getSize().x);
+
+
+                var top = 10;
+                for (var i = 0; i < geometry.animations.length; i++) {
+                    tab.push(geometry.animations[i].name)
+
+
+                }
+               // console.log(tab)
+                for (var i = 0; i <tab.length; i++) {
+                    var button = document.createElement("input");
+                    top += 25
+
+                button.type = "button"
+                button.value = geometry.animations[i].name
+                button.style.position = "absolute"
+                button.style.top = top + "px"
+                button.id = tab[i]
+                button.onclick = function () {
+                    mixer.stopAllAction()
+                    mixer.clipAction(this.value).reset();
+                    mixer.clipAction(this.value).play();
+
+                    for (var i = 0; i < mixertab.length; i++) {
+                        scene.remove(clones[i]);
+                        scene.add(clones[i]);
+                        mixertab[i].stopAllAction()
+                        mixertab[i].clipAction(this.value).reset();
+                        mixertab[i].clipAction(this.value).play();
+                    };
+                    // mixerclones.stopAllAction()
+                    // mixerclones.clipAction(this.value).reset();
+                    // mixerclones.clipAction(this.value).play();
+
+                };
+                document.getElementById("menu").appendChild(button);
+                }
+                clones = []
+                clonebtn = document.createElement("input");
+                clonebtn.type = "button"
+                clonebtn.value = "dodaj"
+                clonebtn.style.position = "absolute"
+                clonebtn.style.left = "40px"
+                clonebtn.id = tab[i]
+                clonebtn.onclick = function () {
+                    // for (var i = -1000; i < 1000; i+=20) {
+                    //     var tab = [i*1, i*1]
+                    //                 tabclones.push(tab)
+                                // };
+                var tabclones = [
+
+                                                [0, 20],
+                                                [-20, 0],
+                                                [0, -20],
+                                                [20, 0],
+                                                [20, 20],
+                                                [-20, 20],
+                                                [20, -20],
+                                                [-20, -20],
+                                                [0, 40],
+                                                [-40, 0],
+                                                [0, -40],
+                                                [40, 0],
+                                                [40, 40],
+                                                [-40, 40],
+                                                [40, -40],
+                                                [-40, -40]
+                                                [20, 40],
+                                                [-40, 0],
+                                                [20, -40],
+                                                [40, 20]
+
+                                        ]
+                                        console.log(tabclones)
+                                for (var i = 0; i < tabclones.length; i++) {
+                                    var clone = meshModel.clone();
+                                    clone.position.x = tabclones[i][0]
+                                    clone.position.z = tabclones[i][1]
+                                    clones.push(clone)
+                                    scene.add(clone);
+                                    mixertab.push(new THREE.AnimationMixer(clone));
+                                }
+                };
+                document.getElementById("menu").appendChild(clonebtn);
+                clonebtn = document.createElement("input");
+                clonebtn.type = "button"
+                clonebtn.value = "usun"
+                clonebtn.style.position = "absolute"
+                clonebtn.style.left = "80px"
+                clonebtn.id = tab[i]
+                clonebtn.onclick = function () {
+                    for (var i = 0; i < clones.length; i++) {
+                        scene.remove(clones[i]);
+                    };
+                };
+                document.getElementById("menu").appendChild(clonebtn);
+                scene.add(meshModel);
+
+            });
+                    camera.lookAt(scene.position);
+                    var clock = new THREE.Clock();
+
+                    function animateScene() {
+                        var delta = clock.getDelta();
+                        if (mixer) mixer.update(delta)
+                            for (var i = 0; i < mixertab.length; i++) {
+                                mixertab[i].update(delta)
+                            };
+                        requestAnimationFrame(animateScene);
+                        renderer.render(scene, camera);
+                    }
+                    animateScene()
+
+            document.getElementById("scene").appendChild(renderer.domElement);
+
+            function deleteobject(object){
+                scene.remove(object)
+            }
+
+            document.addEventListener("mousedown", onMouseDown, false);
+            var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
+            var mouseVector = new THREE.Vector2() // wektor (x,y) wykorzystany będzie do określenie pozycji myszy na ekranie
+
+            function onMouseDown(event) {
+
+                //pozycja myszy zostaje przeliczona na wartości 0-1, wymagane przez raycaster
+
+                mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+
+                //szukamy punktów wspólnych "promienia" i obiektu 3D
+
+                raycaster.setFromCamera(mouseVector, camera);
+
+                //intersects - tablica obiektów w które "trafia" nasz "promień" wysyłany z kamery
+                //scene.children oznacza, że szukamy meshów bezpośrednio dodanych do sceny3D
+
+                var intersects = raycaster.intersectObjects(scene.children);
+
+                console.log(intersects.length)
+
+                //jeśli długość tablicy > 0 oznacza to że "trafiliśmy" w obiekt 3D czyli "kliknęliśmy" go
+
+                if (intersects.length > 0) {
+
+                   // zerowy w tablicy czyli najbliższy kamery obiekt to ten, którego potrzebujemy:
+
+                    console.log(intersects[0].object);
+                    mesh = intersects[0].object
+                    camera.lookAt(mesh.position)
+                    controls.update();
+                }
+
+            }
+            var controls = new THREE.OrbitControls(camera);
+            // controls.addEventListener('change', renderer);
+            controls.update();
+
+            //var geoTab = [THREE.BoxGeometry(10, 10, 10, 1, 1, 1), THREE.CubeGeometry(10, 10, 10, 1, 1, 1), THREE.CircleGeometry(5, 32), THREE.CylinderGeometry(5, 5, 20, 32), THREE.DodecahedronGeometry(1, 0), THREE.IcosahedronGeometry(1, 0), THREE.OctahedronGeometry(1, 0), THREE.PlaneGeometry(5, 20, 32), RingGeometry(1, 5, 32), THREE.SphereGeometry(5, 32, 32), THREE.TetrahedronGeometry(1, 0), THREE.TorusGeometry(10, 3, 16, 100)]
+
+
+        })
+
+    </script>
+    <style>
+        body{
+            margin:0;
+            /*overflow: hidden;*/
+        }
+        #white{
+            height:50px;
+            width:50px;
+            background-color:black;
+            border: solid black 1px;
+
+        }
+        #black{
+            height:50px;
+            width:50px;
+            border: solid black 1px;
+            background-color:white;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu"></div>
+    <div id="scene"></div>
+
+</body>
+</html>

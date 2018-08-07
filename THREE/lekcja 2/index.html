@@ -1,0 +1,261 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="three.js"></script>
+    <script src="orbit.js"></script>
+
+    <script>
+        window.addEventListener("load", function () {
+            function Camera() {
+
+                //Startowe położenie kamery
+                var degree_vertical = 500;
+                var degree_horizontal = 2.4;
+                var distance = 500;
+
+                this.move_left = function () {
+                    degree_horizontal += 0.5; //do poprawki zależnie od parametru distance
+                    camera.position.x = scene.position.x + Math.cos(degree_horizontal / Math.PI) * distance;
+                    camera.position.z = scene.position.z + Math.sin(degree_horizontal / Math.PI) * distance;
+                    camera.lookAt(scene.position)
+                }
+
+                this.move_right = function () {
+                    degree_horizontal -= 0.5; //do poprawki zależnie od parametru distance
+                    camera.position.x = scene.position.x + Math.cos(degree_horizontal / Math.PI) * distance;
+                    camera.position.z = scene.position.z + Math.sin(degree_horizontal / Math.PI) * distance;
+                    camera.lookAt(scene.position)
+                }
+
+            }
+            var move_camera = new Camera();
+            var fov = 90; //GLOBALS
+            var color = 0x000000;
+            var width = innerWidth-10;
+            var height = innerHeight-10;
+
+
+
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(
+                fov, // k�t patrzenia kamery (FOV - field of view)
+                4 / 3, // proporcje widoku, powinny odpowiada� proporjom naszego ekranu przegl�darki
+                0.1, // minimalna renderowana odleg�o��
+                10000 // maxymalna renderowana odleg�o��
+            );
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor(color);
+            renderer.setSize(width, height);
+            camera.position.x = -155;
+            camera.position.y = 300;
+            camera.position.z = 239;
+
+            var axis = new THREE.AxisHelper(400);    // 200 - wielkość
+            scene.add(axis);
+
+            var materials = [];
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture('mats/A.jpg') }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture('mats/B.jpg') }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture('mats/C.jpg') }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture('mats/D.jpg') }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture('mats/E.jpg') }));
+            materials.push(new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture('mats/F.jpg') }));
+
+            var faceMaterial = new THREE.MeshFaceMaterial(materials);
+            var skala = 3;
+
+            var tab = [
+                              [32, 0, 0],
+                              [64, 0, 0],
+                              [96, 0, 0],
+                              [0, 0, -32],
+                              [0, 0, -64],
+                              [0, 0, -96],
+                              [32, 0, -96],
+                              [64, 0, -96],
+                              [96, 0, -96],
+                              [96, 0, -32],
+                              [96, 0, -64],
+                              [32, 32, -96],
+                              [64, 32, -96],
+                              [96, 32, -96],
+                              [96, 32, -64],
+                              [96, 32, -32],
+                              [64, 64, -96],
+                              [96, 64, -96],
+                              [96, 64, -64],
+                              [96, 96, -96],
+                              [0, 0, 0]
+            ]
+            var plane = new THREE.PlaneBufferGeometry( 128, 128, 32 )
+            var plane_material = new THREE.MeshBasicMaterial( {side: THREE.DoubleSide, map: THREE.ImageUtils.loadTexture('mats/G.jpg')} );
+            var plane_mesh = new THREE.Mesh(plane, plane_material);
+            plane_mesh.rotation.set(300,0,0)
+            plane_mesh.position.set(0,-5,0)
+
+            scene.add(plane_mesh);
+            var geometry = new THREE.CubeGeometry(32, 32, 32, 1, 1, 1);
+
+            for (var i = 0; i < tab.length;i++){
+                var mesh = new THREE.Mesh(geometry, faceMaterial);
+                mesh.position.set(tab[i][0], tab[i][1], tab[i][2]); // pozycje z tablicy
+                scene.add(mesh);
+        }
+
+               // var material = new THREE.MeshBasicMaterial({
+               //         color: 0x0000ff, side: THREE.DoubleSide, wireframe: true
+               //     });
+               // mesh = new THREE.Mesh(geometry, faceMaterial);
+
+                //    scene.add(mesh);
+
+                    camera.lookAt(scene.position);
+                     
+                    function animateScene() {
+            document.addEventListener("keydown", onKeyDown, false); // naciśnięcie dowolnego klawisza
+
+                        // console.log(mesh)
+                        //var rotation = 0.01;
+                        //rotation = document.getElementById('setRotate').value
+                        //rotation = parseFloat(rotation)
+                        //mesh.rotation.y += rotation;
+                        requestAnimationFrame(animateScene);
+                        renderer.render(scene, camera);
+                    }
+                    animateScene()
+
+
+
+            document.getElementById("scene").appendChild(renderer.domElement);
+
+            function deleteobject(object){
+                scene.remove(object)
+            }
+
+            document.addEventListener("keyup", onKeyUp, false); //zwolnienie dowolnego klawisza
+            document.addEventListener("mousedown", onMouseDown, false);
+            var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
+            var mouseVector = new THREE.Vector2() // wektor (x,y) wykorzystany będzie do określenie pozycji myszy na ekranie
+
+            function onMouseDown(event) {
+    
+                //pozycja myszy zostaje przeliczona na wartości 0-1, wymagane przez raycaster
+
+                mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    
+    
+                //szukamy punktów wspólnych "promienia" i obiektu 3D 
+
+                raycaster.setFromCamera(mouseVector, camera);
+    
+                //intersects - tablica obiektów w które "trafia" nasz "promień" wysyłany z kamery
+                //scene.children oznacza, że szukamy meshów bezpośrednio dodanych do sceny3D
+
+                var intersects = raycaster.intersectObjects(scene.children);
+   
+                console.log(intersects.length)
+
+                //jeśli długość tablicy > 0 oznacza to że "trafiliśmy" w obiekt 3D czyli "kliknęliśmy" go
+
+                if (intersects.length > 0) {
+
+                   // zerowy w tablicy czyli najbliższy kamery obiekt to ten, którego potrzebujemy:
+
+                    console.log(intersects[0].object);
+                    mesh = intersects[0].object
+                    camera.lookAt(mesh.position)
+                    camera.updateProjectionMatrix();
+                }
+
+            }
+            var controls = new THREE.OrbitControls(camera);
+            // controls.addEventListener('change', renderer);
+            controls.update();
+
+            function onKeyDown(event) {
+
+                var keyCode = event.which;
+
+                console.log(keyCode); // wyloguj kod klawisza
+
+                switch (keyCode) {
+
+                    case 65:
+                        mesh.position.x -= 10
+                        console.log(mesh.position);
+                        break;
+                    case 68:
+                        mesh.position.x += 10
+                        console.log(mesh.position);
+
+                        break;
+                    case 83:
+                        mesh.position.z += 10
+                        console.log(mesh.position);
+
+                        break;
+                    case 87:
+                        mesh.position.z -= 10
+                        console.log(mesh.position);
+
+                        break;
+                    case 37:
+                        //camera.position.x -= 1
+                        move_camera.move_left();
+                        //x = scene.position.x + cos(alfa) * r
+                        //y = scene.position.y + sin(alfa) * r
+                        console.log(camera.position);
+                        break
+                    case 39:
+                       move_camera.move_right();
+                        console.log(camera.position);
+                        break;
+                    case 38:
+                        camera.position.y -= 1
+                        console.log(camera.position);
+                        break;
+                    case 40:
+                        camera.position.y += 1
+                        console.log(camera.position);
+                        break;
+                }
+
+            }
+
+            function onKeyUp() {
+
+            }
+
+          
+            //var geoTab = [THREE.BoxGeometry(10, 10, 10, 1, 1, 1), THREE.CubeGeometry(10, 10, 10, 1, 1, 1), THREE.CircleGeometry(5, 32), THREE.CylinderGeometry(5, 5, 20, 32), THREE.DodecahedronGeometry(1, 0), THREE.IcosahedronGeometry(1, 0), THREE.OctahedronGeometry(1, 0), THREE.PlaneGeometry(5, 20, 32), RingGeometry(1, 5, 32), THREE.SphereGeometry(5, 32, 32), THREE.TetrahedronGeometry(1, 0), THREE.TorusGeometry(10, 3, 16, 100)]
+
+
+        })
+
+    </script>
+    <style>
+        body{
+            margin:0;
+            /*overflow: hidden;*/
+        }
+        #white{
+            height:50px;
+            width:50px;
+            background-color:black;
+            border: solid black 1px;
+
+        }
+        #black{
+            height:50px;
+            width:50px;
+            border: solid black 1px;
+            background-color:white;
+        }
+    </style>
+</head>
+<body>
+    <div id="scene"></div>
+   
+</body>
+</html>

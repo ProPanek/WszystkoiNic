@@ -1,0 +1,723 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <script src="lib/jquery-3.1.0.min.js"></script>
+    <script src="lib/gmap3.js"></script>
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC8hR3r1EwxjHf3rQP3q-QCaJfI8u9Yfc8&region=PL"></script>
+    <style>
+        
+        *{
+            margin:0px;
+            padding:0px;
+          
+        }
+        button:hover{
+            background-color: white;
+        }
+        body{
+            font-family: Arial;
+        }
+        div #marker{
+            border-bottom: 1px solid green;
+            margin-top: 2px;
+        }
+        #div_wycieczka{
+            border-top: 1px solid green;
+        }
+        div #div_wycieczka{
+            border-bottom: 1px solid green;
+        }
+        #marker:hover{
+            background-color: white;
+        }
+        #marker{
+            position: relative;
+        }
+        #delete{
+            position: absolute;
+            display: inline;
+            width: 14px;
+            height: 14px;
+            background-color:red;
+        }
+        #wycieczka_lista{
+            margin-top: 4px;
+            text-align: center;
+            border-bottom: solid black 1px;
+        }
+        .info_wycieczka{
+            position: absolute;
+            display: inline;
+            width: 14px;
+            height: 14px;
+            background-color:yellow;
+        }
+        #menu{
+            z-index: 1;
+            position: absolute;
+            display: inline-block;
+            width: 30%;
+            height: 100vh;
+            background-color: gray;
+        }
+        #menu_icon{
+            background-image:url('gfx/menu.png');
+            position: absolute;
+            background-size: 64px;
+            top: 4px;
+            left: 2px;
+            width: 64px;
+            height: 64px;
+            z-index:2;
+        }
+		#color_icon{
+            background-image:url('gfx/colors.png');
+            position: absolute;
+            background-size: 64px;
+            top: 4px;
+            left: 66px;
+            width: 64px;
+            height: 64px;
+            z-index:4;
+        }
+        #map_type_icon{
+            background-image:url('gfx/worldwide.png');
+            position: absolute;
+            background-size: 64px;
+            top: 4px;
+            left: 128px;
+            width: 64px;
+            height: 64px;
+            z-index:4;
+        }
+        #localization_icon{
+            background-image:url('gfx/localization.png');
+            position: absolute;
+            background-size: 64px;
+            top: 4px;
+            left: 190px;
+            width: 64px;
+            height: 64px;
+            z-index:2;
+        }
+        
+        .type_map span {
+            text-align: center;
+            color:white;
+            width: 100%;
+            background-color: black;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+        .color_more:hover{
+           border: 3px solid white;
+        }
+        .extend_color:hover{
+           border: 3px solid white;
+
+        }
+        button {
+            background-color:#44c767;
+            border:1px solid #18ab29;
+            display:inline-block;
+            cursor:pointer;
+            color:#ffffff;
+            font-family:Arial;
+            font-size:17px;
+            padding:16px 31px;
+            text-decoration:none;
+        }
+        button:hover {
+            background-color:#5cbf2a;
+        }
+        button:active {
+            position:relative;
+            top:1px;
+        }
+
+    </style>
+    <script>
+        $(document).ready(function () {
+            var wys = window.innerHeight/2
+            var szer = window.innerWidth/3
+            var ls = localStorage;
+            if (ls.getItem("actual_list") === null) {
+                ls.setItem("actual_list", "[]");
+            }
+            
+            $("#mapDiv").gmap3({
+                map: {
+                    options: {
+                        center: [50.046393, 19.922188],
+                        zoom: 18,
+                        disableDefaultUI: true
+
+                    },
+                marker: {
+                    options: {
+                        draggable:true 
+                    },
+                    latLng: [50.046393, 19.922188]
+                },
+                events: {
+                        click: function (map, event) {
+                            var lat = event.latLng.lat();
+                            var lng = event.latLng.lng();
+                            dodajMarker(lat,lng)
+							centerStreetView(lat, lng)
+                        }
+                    }
+                }
+
+            })
+                    var key_tab = []
+                    for (var key in ls){
+                        key_tab.push(key)
+                    }
+                        key_tab.splice(0,1)
+
+                    for (var i = 0; i < key_tab.length; i++) {
+                        var div_wycieczka = $("<center><div id='div_wycieczka'>" + key_tab[i] + "<div id='delete_wycieczka'></div></div></center>")
+                        $("#lista_wycieczek").append(div_wycieczka)
+                    }
+                        //console.log(key_tab)
+               
+                    var tab_marker = [];
+                    var XD = JSON.parse(ls.getItem("actual_list") || "[]")
+                    for (var i = 0; i < XD.length; i++) {
+                    dodajMarker(XD[i].lat,XD[i].lng)
+                    }
+            var tab_marker_serwer = []
+            var z = parseInt($("#zoom").val())
+
+            function dodajMarker(lat,lng){
+                narysowane = false
+                var tag = JSON.stringify([lat, lng])
+
+                $("#mapDiv").gmap3({
+                    marker: {
+                        latLng: [lat, lng],
+                        tag: tag,
+                    },
+                })
+                tab_marker.push({ lat: lat, lng: lng })
+                tab_marker_serwer.push([lat,lng,z])
+
+                //console.log(tab_marker_serwer)
+
+
+                var div = $("<div id='marker'>" + lat +" "+ lng + "<div id='delete'></div></div>").data("poz", { lat: lat, lng:lng }); 
+                $("#markery").append(div)
+                
+                div.on("click",  function(){
+                    var mark_x = $(this).data("poz").lat
+                    var mark_y = $(this).data("poz").lng
+                    markCenter(mark_x, mark_y)
+                    centerStreetView(mark_x, mark_y)
+                })
+                div.on("click","#delete", function(){
+                    var tak = confirm("Czy usunąć to miejsce z listy?")
+                    if(tak){
+                        narysowane = false
+                        $("#mapDiv").gmap3({clear: 'polyline'})
+                        $('#mapDiv').gmap3({clear:{"tag": tag}});
+                        var index = $(this).parent().index();
+                        var item = $(this).parent();
+                        tab_marker.splice(index,1)
+                        item.remove();
+                    }
+					
+                })
+            }
+            
+            function markCenter(mark_x, mark_y){
+                var z = parseInt($("#zoom").val())
+
+                $("#mapDiv").gmap3({
+
+                    map: {
+                        options: {
+
+                            center: [mark_x, mark_y],
+                            zoom: z,
+
+                        }
+                    }
+                })
+            }
+            function changeGeo(){
+                var z = parseInt($("#zoom").val())
+                var x = $("#up_down").val()
+                var y = $("#left_right").val()
+                $("#mapDiv").gmap3({
+
+                    map: {
+                        options: {
+
+                            center: [x, y],
+                            zoom: z,
+
+                        }
+                    }
+                })
+            }
+            $("#up_down").on("input", function () {
+                changeGeo()
+            })
+            $("#left_right").on("input", function () {
+                changeGeo()
+            })
+            $("#zoom").on("input", function () {
+                changeGeo()
+            })
+             $("#save_localization").on("click", function () {
+				if(tab_marker.length == 0){
+					alert("nie ma co zapisać");
+					return 1;
+				}
+                ls.setItem("actual_list", JSON.stringify(tab_marker));
+
+                //console.log(tab_marker)
+            })
+                $("#clear").on("click", function () {
+                    $('#mapDiv').gmap3('clear')
+                    tab_marker = [];
+                    $("#markery").empty();
+                    ls.setItem("actual_list", "[]");
+                    narysowane = false
+                })
+            $("#slide").on("dragstart", function(event){
+                event.preventDefault()
+                $("body").on("mousemove", function(event){
+                    $("#mapDiv").css("width", event.clientX    +"px")
+                    $("#panel").css("width", window.innerWidth - event.clientX - 30 +"px")
+                }).on("mouseup", function(){
+                    $("body").off("mousemove")
+                })
+            })
+            $("#menu_icon").on("click", function(){
+                if ($("#menu_icon").hasClass("off")) {
+                     $("#menu").animate({"left":"0px"},500);
+                     $("#menu_icon").attr('class', 'on')
+                     return
+                };
+                if ($("#menu_icon").hasClass("on")) {
+                     $("#menu").animate({"left":"-100%"},500);
+					 
+                     $("#menu_icon").attr('class', 'off')
+                     return
+                };
+               
+            })
+            $("#save_loc").on('click', function(){
+                if(tab_marker.length == 0){
+                    alert("nie ma co zapisać");
+                    return 1;
+                }
+                var date = new Date();
+                var day = date.getDay()
+                var month = date.getMonth()
+                var year = date.getFullYear()
+                var hours = date.getHours()
+                var minutes = date.getMinutes()
+                var seconds = date.getSeconds()
+                if (hours <= 9) {
+                    hours = "0" + hours
+                }
+                if (minutes <= 9) {
+                    minutes = "0" + minutes
+                }
+                if (seconds <= 9) {
+                    seconds = "0" + seconds
+                }
+                var date_now = ""+day +"-"+ month + "-"+ year + " " + hours + ":" + minutes + ":" + seconds +"";
+                console.log(date_now)
+                var wycieczka = prompt("Jak chcesz nazwać tą wycieczkę?")
+                if (wycieczka === "" || wycieczka === null) {
+                    alert("Nie pozostawiaj tego pola pustego, spróbuj ponownie.")
+                    return 1
+                }
+                var obj = [
+                    wycieczka,
+                    line_color,
+                    date_now, 
+                ].concat(tab_marker_serwer)
+                var em = JSON.stringify(obj)
+                //console.log(em)
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:50259/Saving.aspx",
+                    data: em,
+                    dataType: 'text',
+                    success: function (response) {
+                        alert("komunikat z serwera: " + response)
+                    },
+                    error: function(xhr){
+                        alert("błąd" + xhr.responseText)
+                    }
+                })
+                
+                //ls.setItem(wycieczka, JSON.stringify(tab_marker));
+
+
+            })
+            $("#load_loc").on("click", function(){
+                 $.ajax({                                                 
+                    type: "GET",
+                    url: "http://localhost:50259/Loading.aspx",
+                    success: function (response) {
+                        //alert("komunikat z serwera: " + response)
+                        //var wycieczka = prompt("podaj nazwę wycieczki")
+                        //if (wycieczka == null || wycieczka == undefined || wycieczka == "") {
+                        //    alert("nie wczytano wycieczki")
+                        //    return 1;
+                        //}
+
+                        var wycieczki = "[" + response.slice(0,-1).split("\n").join(",\n") + "]"
+
+                        var tablica = JSON.parse(wycieczki)
+                        console.log(tablica)
+                        //if (tablica === undefined || tablica.length == 0 || tablica === null) {
+                        //    alert("Nie ma zapisanych wycieczek")
+                        //    return 1
+                        //}
+                        //console.log(tablica)
+                        for (var i = 0; i < tablica.length ; i++) {
+                            console.log(tablica[i][0])
+
+                            var div = $("<div id='wycieczka_lista'>"+tablica[i][0] + "<div class='info_wycieczka'></div></div>")
+                            $("#list_journey").append(div)
+                            
+                             div.on("click",  function(){
+                                 var nazwa = $(this).index()
+                                 //console.log(nazwa)
+                                 line_color = tablica[nazwa][1]
+                                tab_marker = [];
+                                $('#mapDiv').gmap3('clear')
+                                $("#markery").empty();
+                               var do_markerks = tablica[nazwa].slice(3)
+                                //console.log(do_markerks)
+                                centerStreetView(do_markerks[nazwa][0], do_markerks[nazwa][1])
+                                for (var i = 0; i < do_markerks.length; i++) {
+                                   dodajMarker(do_markerks[i][0] ,do_markerks[i][1])
+                                }
+                                $("#mapDiv").gmap3({ autofit: {}})
+                                rysujTrase()
+                             })
+                        }
+
+                             $(".info_wycieczka").on("click", function(){
+                                 var nazwa = $(this).parent().index();
+                                 console.log(nazwa)
+                                 alert("Data zapisania wycieczki " + tablica[nazwa][2] + "\n" +"nazwa wycieczki " +tablica[nazwa][0])
+                             })
+                            //if (tablica[i][0] == wycieczka ) {
+                                //line_color = tablica[i][1]
+                                //tab_marker = [];
+                                //$('#mapDiv').gmap3('clear')
+                                //$("#markery").empty();
+                               // var do_markerks = tablica[i].slice(3)
+                                //console.log(do_markerks)
+                                //centerStreetView(do_markerks[i][0], do_markerks[i][1])
+                                //for (var i = 0; i < do_markerks.length; i++) {
+                                //    dodajMarker(do_markerks[i][0] ,do_markerks[i][1])
+                                //}
+                       //}
+                        //console.log(tablica)
+                    },
+                    error: function(xhr){
+                        alert("błąd" + xhr.responseText)
+                    }
+                })
+                // $.ajax({                                                 << do wczytania wycieczko po indeksie
+                //     type: "GET",
+                //     url: "http://localhost:6210/Loading.aspx",
+                //     success: function (response) {
+                //         //alert("komunikat z serwera: " + response)
+                //         var wycieczka = prompt("podaj index wycieczki")
+                //         var wycieczki = response.split("\n")
+                //         var tablica = JSON.parse(wycieczki[wycieczka])
+                //         console.log(tablica)
+                //     },
+                //     error: function(xhr){
+                //         alert("błąd" + xhr.responseText)
+                //     }
+
+                // })
+                    // if (key_tab === undefined || key_tab.length == 0) {
+                    //     alert("Nie ma zapisanych wycieczek")
+                    //     return 1
+                    // }
+                    // var wycieczka = prompt("Podaj nazwę wycieczki")
+                    // if (ls.getItem(wycieczka) === null) {
+                    //     alert("nie ma takiej wycieczki")
+                    //     return 1
+                    // }
+                    // var XD = JSON.parse(ls.getItem(wycieczka) || "[]")
+                    // tab_marker = [];
+                    // $('#mapDiv').gmap3('clear')
+                    // $("#markery").empty();
+                    // for (var i = 0; i < XD.length; i++) {
+                    // dodajMarker(XD[i].lat,XD[i].lng)
+                    //}
+            })
+            $("#delete_loc").on('click', function(){
+                $.ajax({                                                 
+                    type: "GET",
+                    url: "http://3ia1.spec.pl.hostingasp.pl/Ogarek_Sebastian/GMAP/Loading.aspx",
+                    success: function (response) {
+                        //alert("komunikat z serwera: " + response)
+                        var wycieczka = prompt("podaj nazwę wycieczki")
+
+                        var wycieczki = "[" + response.slice(0,-1).split("\n").join(",\n") + "]"
+
+                        var tablica = JSON.parse(wycieczki)
+                        var n = jQuery.inArray( wycieczka, tablica )
+                        console.log(n)
+                        //console.log(tablica)
+                    },
+                    error: function(xhr){
+                        alert("błąd" + xhr.responseText)
+                    }
+                })
+            })
+            $("#rysujtrase").on('click', rysujTrase)
+            var line_color = "#FF0000"
+            var narysowane = false;
+            function rysujTrase(){
+                if(tab_marker.length == 0 || tab_marker.length == 1 ){
+                    alert("musisz postawić co najmniej dwa markery na mapie")
+                return 1}
+                $("#mapDiv").gmap3({clear: 'polyline'})
+                narysowane = true;
+                $("#mapDiv").gmap3({
+                
+                   polyline: { // wielokąt
+                       options: {
+                           strokeColor: line_color,
+                           strokeOpacity: 0.5,
+                           strokeWeight: 4,
+                           path: tab_marker
+                           
+                       }
+                   }
+
+                });
+                
+            }
+			function centerStreetView(lat, lng){
+				
+				var zsl = new google.maps.LatLng(lat, lng);
+				$("#mapDiv").gmap3({
+				  map:{
+					options:{
+					  zoom: 14, 
+					  mapTypeId: google.maps.MapTypeId.ROADMAP, 
+					  streetViewControl: false, 
+					  center: zsl
+					}
+				  },
+				  streetviewpanorama:{
+					options:{
+					  container: $("#streetview"),
+					  opts:{
+						position: zsl,
+						fullscreenControl: false,
+						pov: {
+						  heading: 34,
+						  pitch: 10,
+						  zoom: 1
+						}
+					  }
+					}
+				  }
+				});
+			}
+			var color_tab = ["#FF0000","#FF8000","#FFFF00","#FFF00F", "#00FF00", "#00FF80", "#00FFFF","#0080FF", "#0000FF","#8000FF", "#FF00FF", "#FF0080","#848484" ,"#FF4000", "#FFBF00", "#3F3F00"]
+			console.log(color_tab.length)
+			function kolory(){
+				for(var i = 0; i <4 ; i++){
+					for(var j = 0; j<4; j++){
+						var color =  $("<div class='color_more'></div>") 
+							color.width(window.innerWidth/15   + "px")
+							color.height(window.innerHeight/10 + "px")
+							color.css("position", "absolute")
+							color.css("border-radius", "50%")
+                            color.css("opacity", 1)
+							color.css("top", 75+(window.innerHeight/9  *  i)  + "px")
+							color.css("left", szer+(window.innerWidth/14 *   j)  +"px")
+							color.css("background-color", color_tab[i*4+j])
+							$("#kolornik").append(color)
+							
+
+
+					}
+				}
+
+                for (var i = 0; i < 6; i++) {
+                                var extend_color = $("<div class='extend_color'>")
+                                    extend_color.width(window.innerWidth/15  + "px")
+                                    extend_color.height(window.innerHeight/10 + "px")
+                                    extend_color.css("position", "absolute")
+                                    extend_color.css("border-radius", "50%")
+                                    extend_color.css("top", 100 +(window.innerHeight/9 * i)  + "px")
+                                    extend_color.css("left", (szer/2) + "px")
+                                    $("#kolornik").append(extend_color)
+                            }
+			}
+			kolory()
+            $(".color_more").on("click", function(){
+                var match =  /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/.exec($(this).css("backgroundColor"))
+                for (var i = 0; i < 6; i++) {
+                    $($(".extend_color")[i]).css("background-color", "rgb("+(Number(match[1]) + i*30)+", " + (Number(match[2]) + i*30) + ", " + (Number(match[3]) + i*30)+")")
+                    //console.log("rgb("+(Number(match[1]) + i*10)+", " + (Number(match[2]) + i*10) + ", " + (Number(match[3]) + i*10)+")")
+                }
+            })
+            $(".extend_color").on("click", function(){
+                if(narysowane){
+                    line_color = $(this).css("backgroundColor")
+                    rysujTrase()
+                }
+                else alert("najpierw narysuj trasę, potem zmień kolor")
+                
+            })
+			$("#color_icon").on("click", function(){
+                if ($("#color_icon").hasClass("off")) {
+                    $("#map_type_icon").css("z-index", "2")
+                     $( "#kolornik" ).fadeIn( 500, function() {
+
+					})
+                     $("#color_icon").attr('class', 'on')
+                     return
+                };
+                if ($("#color_icon").hasClass("on")) {
+                    $("#map_type_icon").css("z-index", "4")
+
+                     $( "#kolornik" ).fadeOut( 500, function() {
+				
+					})
+                     $("#color_icon").attr('class', 'off')
+                     return
+                };
+               
+            })
+            $("#localization_icon").on("click", function(){
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        //bieżąca pozycja lat i lng
+                        dodajMarker(position.coords.latitude, position.coords.longitude)
+                        centerStreetView(position.coords.latitude, position.coords.longitude)
+                        $("#mapDiv").gmap3({map: {options: {center: [position.coords.latitude, position.coords.longitude]}}})
+                        //console.log(position.coords.longitude)
+                    },
+                    function (error) {
+                        alert(error.message) 
+                    },
+                    {
+                    maximumAge: 10000, // czas dostępu do danych
+                    timeout: 15000, // po tym czasie error jeśli brak danych
+                    enableHighAccuracy: true // dokładność
+                    })
+                    
+          
+            })
+            function map_type(){
+                    typmap = ["url('gfx/terrain.png')", "url('gfx/hybrid.png')", "url('gfx/satellite.png')", "url('gfx/roadmap.png')"];
+                    tekt_map = ["terrain", "hybrid", "satellite", "roadmap"]
+                for (var i = 0; i < 4; i++) {
+                    var div = $("<div class='type_map'><span>"+tekt_map[i]+"</span></div>") 
+                    div.css("width", window.innerWidth/12 + "px") 
+                    div.css("height", window.innerHeight/8 +"px") 
+                    div.css("position" , "absolute")
+                    div.css("top", wys + "px")
+                    div.css("left", szer+ ( window.innerWidth/12 * i) + "px")
+                    div.css("background-image", typmap[i] )
+                    $("#map_type").append(div)
+                
+
+                }
+            }
+            map_type()
+            $(".type_map").on("click" , function(){
+                if($(this).index() == 0){
+                    var map = $("#mapDiv").gmap3("get");
+                    map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+                }
+                else if($(this).index() == 1){
+                    var map2 = $("#mapDiv").gmap3("get");
+                    map2.setMapTypeId(google.maps.MapTypeId.HYBRID);
+                }
+                else if($(this).index() == 2){
+                    var map3 = $("#mapDiv").gmap3("get");
+                    map3.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+                }
+                else if($(this).index() == 3){
+                    var map4 = $("#mapDiv").gmap3("get");
+                    map4.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+                }
+                
+            })
+           $("#map_type_icon").on("click", function(){
+                if ($("#map_type_icon").hasClass("off")) {
+                    $("#color_icon").css("z-index", "1")
+
+                     $( "#map_type" ).fadeIn( 500, function() {
+
+                    })
+                     $("#map_type_icon").attr('class', 'on')
+                     return
+                };
+                if ($("#map_type_icon").hasClass("on")) {
+                    $("#color_icon").css("z-index", "4")
+
+                     $( "#map_type" ).fadeOut( 500, function() {
+                
+                    })
+                     $("#map_type_icon").attr('class', 'off')
+                     return
+                };
+               
+            })
+        })
+    </script>
+</head>
+<body>
+	
+	<div id="kolornik" style=" width:100%; height:100%; background:rgba(128,128,128, 0.8);; position:absolute; z-index:3; display:none;"></div>
+    <div id="map_type" style=" width:100%; height:100%; background:rgba(128,128,128, 0.8);; position:absolute; z-index:3; display:none;"></div>
+
+		<div id="menu_icon" class="off"></div>
+		<div id="color_icon" class="off" ></div>
+        <div id="map_type_icon" class="off" ></div>
+        <div id="localization_icon" ></div>
+		<div id="menu" style="left:-100%; padding-top:70px; box-sizing:border-box;">
+			<button id="save_loc" style="width:100%; height:50px; margin-bottom: 4px;"> Zapisz wycieczkę</button>
+			<button id="load_loc" style="width:100%; height:50px; margin-bottom: 4px;"> Wczytaj wycieczkę</button>
+			<button id="delete_loc" style="width:100%; height:50px; margin-bottom: 4px; display: none;"> Usuń wycieczkę</button>
+			<button id="rysujtrase" style="width:100%; height:50px; margin-bottom: 4px;"> Rysuj trasę</button>
+            <div id="list_journey" style="width:100%;  margin-bottom: 4px; overflow: auto;"></div>
+			<div id="streetview" style="width:100%; height:50%; top:50%; position:absolute; bottom: 5px;"></div>
+		</div>
+		<div id="mapDiv" style="width:67%; height:99vh; display: inline-block;" >
+	 
+		</div>
+		<div id="slide" draggable="true" style="width:2px; background-color:green; height:99vh; top:0px; left:49.5%; display: inline-block; cursor:col-resize;" ></div>
+	  
+		<div id="panel" style=" height:100vh; width: 30%; background-color:grey; top:0px; left:50%; display: inline-block; vertical-align:top; ">
+			<button style="width:100%; height:50px; margin-top:20px;" id="save_localization">Zapisz lokalizacje</button> <br />
+			<button style="width:100%; height:50px;" id="clear">usuń</button> <br />
+			<input id="up_down" style="width:100%;" step="0.01" type="range" min="-180" max="180" value="50.046393" /> <br />
+			<input id="left_right" style="width:100%;" step="0.01" type="range" min="-90" max="90" value="19.922188" /> <br />
+			<input id="zoom" style="width:100%;" step="0.01" type="range" min="0" max="20" value="18" /> <br />
+			<div id="markery" style="height: 60%; width:100%; border-top:2px solid green; overflow: auto;">
+				
+			</div>
+
+		</div>
+	
+</body>
+</html>

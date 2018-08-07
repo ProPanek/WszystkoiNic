@@ -1,0 +1,197 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="three.js"></script>
+    <script>
+        window.addEventListener("load", function () {
+            var fov = 10; //GLOBALS
+            var color = 0x000000;
+            var width = 800;
+            var height = 600;
+            number = 0;
+           var geoTab = [new THREE.BoxGeometry(10, 10, 10, 1, 1, 1), new THREE.CubeGeometry(10, 10, 10, 1, 1, 1), new THREE.CircleGeometry(5, 32), new THREE.CylinderGeometry(5, 5, 20, 32), new THREE.DodecahedronGeometry(1, 0), new THREE.IcosahedronGeometry(1, 0), new THREE.OctahedronGeometry(1, 0), new THREE.PlaneGeometry(5, 20, 32), new THREE.RingGeometry(1, 5, 32), new THREE.SphereGeometry(5, 32, 32), new THREE.TetrahedronGeometry(1, 0), new THREE.TorusGeometry(10, 3, 16, 100)]
+
+
+           
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(
+                fov, // k¹t patrzenia kamery (FOV - field of view)
+                4 / 3, // proporcje widoku, powinny odpowiadaæ proporjom naszego ekranu przegl¹darki
+                0.1, // minimalna renderowana odleg³oœæ
+                10000 // maxymalna renderowana odleg³oœæ
+            );
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor(color);
+            renderer.setSize(width, height);
+            camera.position.x = -200;
+            camera.position.y = 200;
+            camera.position.z = 200;
+
+            var myDiv = document.getElementById("geometry");
+            var geoTxt = ['Box', 'Cube', 'Circle', 'Cylinder', 'Dodecahedron', 'Icosahedron', 'Octahedron', 'Plane', 'Ring', 'Sphere', 'Tetrahedron', 'Torus']
+            var selectList = document.createElement("select");
+            selectList.id = "geo";
+            selectList.name = "geos";
+            myDiv.appendChild(selectList);
+           
+            for (var i = 0; i < geoTxt.length; i++) {
+                var option = document.createElement("option");
+                option.value = geoTxt[i];
+                option.text = geoTxt[i];
+                option.id = geoTxt[i]
+                selectList.appendChild(option);
+            }
+
+             
+
+            function addObj(number){
+                var geometry = geoTab[number]
+                var material = new THREE.MeshBasicMaterial({
+                        color: 0x0000ff, side: THREE.DoubleSide, wireframe: true
+                    });
+                    mesh = new THREE.Mesh(geometry, material);
+
+                    scene.add(mesh);
+
+                    camera.lookAt(mesh.position);
+                     document.getElementById('setScale').oninput = function () {
+                            scale = document.getElementById('setScale').value
+                            mesh.scale.set(scale, scale, scale);
+                        
+                    };
+                    function animateScene() {
+                        // console.log(mesh)
+                        var rotation = 0.01;
+                        rotation = document.getElementById('setRotate').value
+                        rotation = parseFloat(rotation)
+                        mesh.rotation.y += rotation;
+                        requestAnimationFrame(animateScene);
+                        renderer.render(scene, camera);
+                    }
+                    animateScene()
+
+            }
+            addObj(number)
+
+            document.getElementById('geo').onchange = function(){
+                value = document.getElementById('geo').value
+                console.log(value)
+                deleteobject(mesh)
+
+                if (value == 'Box') {
+                    number = 0;
+                    addObj(number);
+                   
+                }
+                if (value == 'Cube') {
+                    number = 1;
+                    addObj(number);
+                }
+                if (value == 'Circle') {
+                    number = 2;
+                    addObj(number);
+                }
+                if (value == 'Cylinder') {
+                    number = 3;
+                    addObj(number);
+                }
+                if (value == 'Dodecahedron') {
+                    number = 4;
+                    addObj(number);
+                }
+                if (value == 'Icosahedron') {
+                    number = 5;
+                    addObj(number);
+                }
+                if (value == 'Octahedron') {
+                    number = 6;
+                    addObj(number);
+                }
+                if (value == 'Plane') {
+                    number = 7;
+                    addObj(number);
+                }
+                if (value == 'Ring') {
+                    number = 8;
+                    addObj(number);
+                }
+                if (value == 'Sphere') {
+                    number = 9;
+                    addObj(number);
+                }
+                if (value == 'Tetrahedron') {
+                    number = 10;
+                    addObj(number);
+                }
+                if (value == 'Torus') {
+                    number = 11;
+                    addObj(number);
+                }
+
+            }
+
+           
+           
+            document.getElementById("scene").appendChild(renderer.domElement);
+            
+            function deleteobject(object){
+                scene.remove(object)
+            }
+            
+
+            document.getElementById('setFov').oninput = function () {
+                    fov = document.getElementById('setFov').value
+                    camera.fov = fov;
+                    camera.updateProjectionMatrix();
+               
+            };
+           
+           
+            document.getElementById('white').onclick = function () {
+                color = 0x000000
+                renderer.setClearColor(color);
+            };
+            document.getElementById('black').onclick = function () {
+                color = 0xffffff
+                renderer.setClearColor(color);
+            };
+            //var geoTab = [THREE.BoxGeometry(10, 10, 10, 1, 1, 1), THREE.CubeGeometry(10, 10, 10, 1, 1, 1), THREE.CircleGeometry(5, 32), THREE.CylinderGeometry(5, 5, 20, 32), THREE.DodecahedronGeometry(1, 0), THREE.IcosahedronGeometry(1, 0), THREE.OctahedronGeometry(1, 0), THREE.PlaneGeometry(5, 20, 32), RingGeometry(1, 5, 32), THREE.SphereGeometry(5, 32, 32), THREE.TetrahedronGeometry(1, 0), THREE.TorusGeometry(10, 3, 16, 100)]
+
+            
+        })
+       
+    </script>
+    <style>
+        body{
+            margin:0;
+            /*overflow: hidden;*/
+        }
+        #white{
+            height:50px;
+            width:50px;
+            background-color:black;
+            border: solid black 1px;
+
+        }
+        #black{
+            height:50px;
+            width:50px;
+            border: solid black 1px;
+            background-color:white;
+        }
+    </style>
+</head>
+<body>
+    <div id="scene"></div>
+    <div id="menu" style="position: block">
+        <label>FOV</label><input type="range" id="setFov" value="10" min="0" max="90"/>
+        <label>SCALE</label><input type="range" id="setScale" step="0.1" value="1" min="1" max="10"/>
+        <label>ROTATION</label><input type="range" id="setRotate" step="0.01" value="0.01" min="0.01" max="2" />
+    </div>
+    <div id="white"></div>
+    <div id="black"></div>
+    <div id="geometry">
+
+    </div>
+</body>
+</html>

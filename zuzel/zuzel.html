@@ -1,0 +1,87 @@
+	<html>
+
+<head>
+	<title>Zujzel</title>
+		<script>
+		var x = 350; //pozycja gracza
+		var y = 250;
+		var kat = 0; // początkowy kąt gracza
+		var prosto=true;
+		var sin =0;
+		var cos=1;
+		przegrales = false;
+		var interval
+
+		function start(){
+
+			canvas = document.getElementById('kanwas');
+
+			myCanvas();
+			document.body.onkeydown=function(e){
+			code=e.which;
+			console.log(code);
+			if(code==37){
+			kat -= (Math.PI * 0.050);
+			sin = Math.sin(kat);
+			cos = Math.cos(kat);
+			}
+		}
+
+			function myCanvas() {
+    		var myCanvas = document.getElementById('kanwas');
+			ctx = myCanvas.getContext('2d');
+			var img = new Image;
+			img.src = "canvas.png";
+			img.onload = function(){
+  			ctx.drawImage(img,20,20); // Or at whatever offset you like
+  			linia();
+  			pom();
+			};
+			};
+
+
+			}
+			function linia(){
+			var canvas= document.getElementById("kanwas");
+			var ctx = canvas.getContext("2d");
+			//ctx.moveTo(x,y);
+			ctx.lineTo(x,y);
+			x += 4 * cos;
+			y += 4 * sin;
+			ctx.strokeStyle = '#ff0000';
+			ctx.stroke();
+			x++;
+			var imgData = ctx.getImageData(x, y, 1, 1);
+			px = imgData.data;
+			//console.log("Red: ", px[0], "Green: ", px[1], "Blue: ", px[2]);
+			przegrana();
+			if (przegrales) {
+				alert("przegrales");
+				clearInterval(interval)
+			}
+			}
+			function pom(){
+				interval = setInterval(linia, 50);
+			}
+			function przegrana(){
+				if (px[0]!=255){
+					przegrales = true;
+				}
+			}
+
+		</script>
+		<style>
+
+		</style>
+	</head>
+
+
+
+
+	<body onload="start()">
+	<canvas id="kanwas" width="800" height="800"></canvas>
+
+	</body>
+
+
+	</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>nodejs</title>
+    <style type="text/css" src="style.css"></style>
+    <script type="text/javascript" src="libs/three.js"></script>
+    <script type="text/javascript" src="libs/orbit.js"></script>
+    <script type="text/javascript" src="libs/jquery.js"></script>
+    <script type="text/javascript" src="libs/gui.js"></script>
+    <script type="text/javascript" src="libs/stats.js"></script>
+    <script type="text/javascript" src="libs/Terrain.js"></script>
+     <script type="text/javascript" src="libs/ColladaLoader.js"></script>
+    <script type="text/javascript" src="js/players/skybox.js"></script>
+    <script type="text/javascript" src="js/players/Helicopter.js"></script> 
+    <script src="js/core/Settings.js"></script>
+    <script src="js/core/CameraController.js"></script>
+    <script src="js/core/CameraModes.js"></script>
+    <script src="js/core/Materials.js"></script>
+    <script src="js/core/Settings.js"></script>
+    <script src="js/screens/StartScreen.js"></script>
+    <script src="js/screens/MenuScreen.js"></script>
+    <script src="js/ui/Button.js"></script>
+    <script src="js/ui/Slider.js"></script>
+    <script type="text/javascript" src="Main.js"></script>
+    <script type="text/javascript">
+     
+        var main, settings;
+        window.addEventListener("load", function () {
+            main = new Main();
+            //console.log(settings)
+        });
+    
+    //html
+
+    </script>
+    <style type="text/css">   
+            * {
+            margin: 0;
+            padding: 0;
+            cursor: pointer;
+
+            }
+            html, body {
+                width: 100%;
+                height: 100%;
+            }
+            body {
+                background-color: #ffffff;
+                margin: 0;
+                overflow: hidden;
+                font-family: arial;
+            }
+            #generateNewTerrain{
+                position:absolute;
+                top:0px;
+                left:0px;
+            }
+            #loadTerrain{
+                position:absolute;
+                top:25px;
+                left:0px;
+            }
+            #noiseResults{
+                position:absolute;
+                top:50px;
+                left:0px;
+            }
+            
+            .slider{
+                position: absolute;
+                z-index: 3;
+                background-color: rgba(80,80,80,0.5);
+
+            }
+            .slider_red{
+                position: absolute;
+                z-index: 5;
+                background-color: indianred;
+                text-align: center;
+                font-size: 40px;
+            }
+            .slider_yellow{
+                position: absolute;
+                z-index: 4;
+                background-color: yellowgreen;
+            }
+
+           
+</style>
+</head>
+<body>
+
+    <div id="scene"></div>
+    <button id="generateNewTerrain">Generowanie terenu</button>
+    <button id="loadTerrain">załaduj teren</button>
+
+    <textarea id="noiseResults"></textarea>
+</body>
+</html>
+

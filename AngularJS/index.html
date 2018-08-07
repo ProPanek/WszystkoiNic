@@ -1,0 +1,126 @@
+<html ng-app="testApp">
+<head>
+    <meta charset="utf-8">
+    <script id="angularScript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+    <style>
+   	.button{
+    	background-color:white;   
+    	color: black ;   
+   	}
+   	.button:focus {     
+    	background-color:black;
+    	color: white ;   
+	}
+    </style>
+    <script type="text/javascript">
+    	var testApp = angular.module("testApp", []);
+    	var id;
+    	testApp.controller('appController', function($scope, $http ){
+    		$scope.tabela_show = true;
+    		$scope.button_show = false;
+    		$scope.gazetka_show = false;
+
+
+    		$http({
+    		  method: 'GET',
+    		  url: '../AngularJS/xpath.php',
+    		  params:{akcja:"start"}
+    		}).then(function successCallback(response) {
+    			$scope.dane = response.data;
+    			console.log($scope.dane)
+    		  }, function errorCallback(response) {
+    		  });
+    		$scope.back_to_menu = function(event){
+    			$scope.tabela_show = true;
+    			$scope.button_show = false;
+    			$scope.gazetka_show = false;
+    		}
+    		$scope.get_id_magazine = function(event){
+    			$scope.gazeta = event.target.id
+    			$http({
+    			  method: 'GET',
+    			  url: '../AngularJS/xpath.php',
+    			  params:{akcja:"daty", id:event.target.id}
+    			}).then(function successCallback(response) {	
+    				var res = response.data[0][0].split(",");
+    				console.log(res)
+    				$scope.lata = res
+    				$scope.tabela_show = false;
+    				$scope.button_show = true;
+    			  }, function errorCallback(response) {
+    			  });
+    		}
+    		$scope.wszystkie = function(event){
+    			$http({
+    			  method: 'GET',
+    			  url: '../AngularJS/xpath.php',
+    			  params:{akcja:"wszystko", id:$scope.gazeta}
+    			}).then(function successCallback(response) {	
+    				$scope.dane_gazetka = response.data[0];
+    				console.log($scope.dane_gazetka)
+    				$scope.gazetka_show = true;
+    			  }, function errorCallback(response) {
+    			  });
+    		}
+    		$scope.rok = function(event){
+    			// var bt = document.getElementsByClassName("button");
+    			// bt.style.backgroundColor = "black"
+    			$http({
+    			  method: 'GET',
+    			  url: '../AngularJS/xpath.php',
+    			  params:{akcja:"rok", id:$scope.gazeta, rok:event.target.id}
+    			}).then(function successCallback(response) {	
+    				$scope.dane_gazetka = response.data;
+    				console.log($scope.dane_gazetka[0]["@attributes"])
+    				$scope.gazetka_show = true;
+    			  }, function errorCallback(response) {
+    			  });
+    		}
+    		
+    	})
+    	
+    </script>
+</head>
+<body ng-controller="appController" style="margin: 0 auto;">
+	<div ng-show="button_show" style="margin: 0 auto; display: table;">
+		<button class="button" style="cursor:pointer;" ng-repeat="a in lata" id="{{ a }}" ng-click="rok($event)">{{ a }}</button>
+		<button class="button" style="cursor:pointer;" id="wszystkie" ng-show="button_show" ng-click="wszystkie($event)">wszystkie</button>
+		<button class="button" style="cursor:pointer;" id="back_data" ng-show="button_show" ng-click="back_to_menu($event)"><---</button>
+
+	</div>
+	<div ng-show="tabela_show" style="display: flex; margin: 0 auto; width: 27vw;">
+		<table  >
+			<tr ng-repeat="a in dane"  >
+				<td ng-if="$even"> <img style="margin:5px;width:180px;cursor:pointer;" ng-click="get_id_magazine($event)" id="{{ a.klik }}" ng-src="http://atarionline.pl/biblioteka/czasopisma/img/{{ a.src }}" ></td>
+			</tr>
+		</table>
+		<table >
+			<tr   ng-repeat="a in dane"  >
+				<td ng-if="$odd"> <img style="margin:5px;width:180px;cursor:pointer;" ng-click="get_id_magazine($event)" id="{{ a.klik }}" ng-src="http://atarionline.pl/biblioteka/czasopisma/img/{{ a.src }}" ></td>
+			</tr>
+		</table>
+	</div>
+	<div style="display: table; margin: 0 auto;">
+		<table border="1" ng-show="gazetka_show">
+			<tr>
+				<th>Strona tytułowa</th>
+				<th>plik</th>
+				<th>pismo</th>
+				<th>darczyńcy</th>
+			</tr>
+			<tr   ng-repeat="a in dane_gazetka"  >
+				<td> 
+					<img ng-if="!(a['@attributes'].brak)" ng-src="http://atarionline.pl/biblioteka/czasopisma/{{gazeta}}/{{ a.miniaturka }}" >
+					<p ng-if="a['@attributes'].brak" style="text-align:center">brak</p>
+				</td>
+				<td ng-if="a['@attributes'].brak" colspan="3"> {{a['@attributes'].brak}}</td>
+				<td ng-if="!(a['@attributes'].brak)"> format: <br> <b>{{a.format}}</b> <br> stron: <br> <b>{{a.stron}}</b> <br> plik: <br> <b> <a href="http://atarionline.pl/biblioteka/czasopisma/{{gazeta}}/{{a.plik}}">tutaj</a></b> <br>  </td>
+				<td ng-if="!(a['@attributes'].brak)"> nazwa: <br> <b>{{a.nazwa}}</b> <br> numer: <br> <b>{{a.numer}}</b> <br> wydawca: <br> <b>{{a.wydawca}} </b> <br>  </td>
+				<td ng-if="!(a['@attributes'].brak)"> skan: <br> <b>{{a.skan}}</b> <br> przetworzenie: <br> <b>{{a.przetworzenie}}</b> <br> podesłał: <br> <b>{{a.podeslal}} </b> <br>  </td>
+			</tr>
+			
+		</table>
+	</div>
+	
+</body>
+</html>

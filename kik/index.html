@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<title></title>
+<script src="lib/jquery-3.1.0.min.js"></script>
+<meta charset="utf-8">
+<style type="text/css">
+html { 
+    
+  background: black url("gfx/backgorund.jpg") no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+    .O{
+        background-image: url(gfx/O.png);
+        background-size: 100% 100%;
+    }
+    .X{
+        background-image: url(gfx/X.png);
+        background-size: 100% 100%;
+
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        var do_planszy = true
+        var do_trzech = false
+        var make = true;
+        var k =3;
+        var window_width = $(window).width()/k  ;
+        var window_height = $(window).width()/k
+        makegame();
+        function color_stay(){
+            if ($("#color").val() == "green") {
+                        for (var i = 0; i < $("#board").children().length ; i++)
+                            $("#board").children().css("background-color", "green")
+                            $("#board").children().css("opacity", "0.8")
+
+                    }
+                    if ($("#color").val() == "gray") {
+                        for (var i = 0; i < $("#board").children().length ; i++)
+                            $("#board").children().css("background-color", "gray")
+                            $("#board").children().css("opacity", "0.8")
+
+                    }
+                    if ($("#color").val() == "white") {
+                        for (var i = 0; i < $("#board").children().length ; i++)
+                            $("#board").children().css("background-color", "white")
+                            $("#board").children().css("opacity", "0.8")
+
+                    }
+                    if ($("#color").val() == "blue") {
+                        for (var i = 0; i < $("#board").children().length ; i++)
+                            $("#board").children().css("background-color", "blue")
+                            $("#board").children().css("opacity", "0.8")
+                    }
+        } 
+        $("#make").on("click", function(){
+            $("#board").children().remove()
+            makegame();
+            color_stay()
+        })
+        $("#size").on("change", function () {
+            k = $("#size").val()
+            window_height = $(window).width()/k
+            window_width = $(window).width()/k  ;
+            $("#board").children().remove()
+            makegame()
+            color_stay()
+        })
+        $("#need").on("change", function () {
+        	$("#make").click()
+            if ($("#need").val()=="1") {
+                do_planszy = true
+                do_trzech = false
+            }
+            if ($("#need").val()=="2") {
+                do_planszy = false
+                do_trzech = true
+            }
+            $("#board").children().remove()
+            makegame()
+            color_stay()                    
+        })
+        function win_x() {
+            var confirm_x = confirm("Wygrały X, czy chcesz zagrać ponownie?")
+            if (confirm_x) {
+                $("#board").children().remove()
+                makegame()
+                color_stay()
+            }
+        }
+        function win_o() {
+            var confirm_o = confirm("Wygrały O, czy chcesz zagrać ponownie?")
+            if (confirm_o) {
+                $("#board").children().remove()
+                makegame()
+                color_stay()
+            }
+        }
+         $("#color").on("change", function () {
+                    if ($("#color").val() == "green") {
+                        for (var i = 0; i < $("#board").children().length ; i++)
+                            $("#board").children().css("background-color", "green")
+                            $("#board").children().css("opacity", "0.8")
+
+                    }
+                    if ($("#color").val() == "gray") {
+                        for (var i = 0; i < $("#board").children().length ; i++)
+                            $("#board").children().css("background-color", "gray")
+                            $("#board").children().css("opacity", "0.8")
+
+                    }
+                    if ($("#color").val() == "white") {
+                        for (var i = 0; i < $("#board").children().length ; i++)
+                            $("#board").children().css("background-color", "white")
+                            $("#board").children().css("opacity", "0.8")
+                    }
+                    if ($("#color").val() == "blue") {
+                        for (var i = 0; i < $("#board").children().length ; i++)
+                            $("#board").children().css("background-color", "blue")
+                            $("#board").children().css("opacity", "0.8")
+                    }
+                })
+        function makegame(){
+         for (var i = 0; i < k ;i++) {
+            for (var j = 0; j < k; j++) {
+                div = $("<div>")
+                div.width(window_width  + "px")
+                div.height(window_height + "px")
+                div.css("position", "absolute")
+                div.css("border", "solid 1px black")
+                div.css("top", 100 +window_height * i  + "px")
+                div.css("left",  window_width * j  +"px")
+                div.css("background-color",  "white")
+
+                div.attr("id", i + "_" + j)
+                $("#board").append(div)
+                console.log(div.children())
+               
+                div.on("click", function(){     
+                    if($(this).attr('class')){
+                        return;
+                    }
+                    else if(make){
+                     $(this).attr("class", "X") 
+                     make = false;
+
+                 }
+                 else if(make == false){
+                     $(this).attr("class", "O")  
+                     make = true;  
+                 }
+                 if (do_trzech) {
+                    for (var x = 0; x <= ($("#size").val()-3); x++) {
+                        for (var y = 0; y <= ($("#size").val()-3); y++) {
+                            for (var i = 0; i < $("#size").val() ;i++) {
+                                                    //poziome sprawdzanie
+                                                    if( $("#"+(i+y)+"_"+(x+0)).hasClass("X") && $("#"+(i+y)+"_"+(x+1)).hasClass("X") && $("#"+(i+y)+"_"+(x+2)).hasClass("X")) { $("#board").children().off(); win_x(); return }
+                                                    if( $("#"+(i+y)+"_"+(x+0)).hasClass("O") && $("#"+(i+y)+"_"+(x+1)).hasClass("O") && $("#"+(i+y)+"_"+(x+2)).hasClass("O")) { $("#board").children().off(); win_o(); return }
+                                                   //pionowe sprawdzanie
+                                                   if( $("#"+(y+0)+"_"+(i+x)).hasClass("O") && $("#"+(y+1)+"_"+(i+x)).hasClass("O") && $("#"+(y+2)+"_"+(i+x)).hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                                   if( $("#"+(y+0)+"_"+(i+x)).hasClass("X") && $("#"+(y+1)+"_"+(i+x)).hasClass("X") && $("#"+(y+2)+"_"+(i+x)).hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                                 //sprawdzanie ukosne
+                                                 if( $("#"+(y+0)+"_"+(x+0)).hasClass("X") && $("#"+(y+1)+"_"+(x+1)).hasClass("X") && $("#"+(y+2)+"_"+(x+2)).hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                                 if( $("#"+(y+0)+"_"+(x+0)).hasClass("O") && $("#"+(y+1)+"_"+(x+1)).hasClass("O") && $("#"+(y+2)+"_"+(x+2)).hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                                 if( $("#"+(y+2)+"_"+(x+0)).hasClass("X") && $("#"+(y+1)+"_"+(x+1)).hasClass("X") && $("#"+(y+0)+"_"+(x+2)).hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                                 if( $("#"+(y+2)+"_"+(x+0)).hasClass("O") && $("#"+(y+1)+"_"+(x+1)).hasClass("O") && $("#"+(y+0)+"_"+(x+2)).hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                             }
+                                         }
+                                     }
+                                 } 
+                                 if(do_planszy){
+                                    if ($("#size").val() == "3" ){
+                                        for (var i = 0; i < k ;i++) {
+                                            //poziome sprawdzanie
+                                            if( $("#"+i+"_0").hasClass("X") && $("#"+i+"_1").hasClass("X") && $("#"+i+"_2").hasClass("X")) { $("#board").children().off(); win_x(); return }
+                                            if( $("#"+i+"_0").hasClass("O") && $("#"+i+"_1").hasClass("O") && $("#"+i+"_2").hasClass("O")) { $("#board").children().off(); win_o(); return }
+                                            //pionowe sprawdzanie
+                                            if( $("#0_"+i).hasClass("O") && $("#1_"+i).hasClass("O") && $("#2_"+i).hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                            if( $("#0_"+i).hasClass("X") && $("#1_"+i).hasClass("X") && $("#2_"+i).hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                        }
+                                         //sprawdzanie ukosne
+                                         if( $("#0_0").hasClass("X") && $("#1_1").hasClass("X") && $("#2_2").hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                         if( $("#0_0").hasClass("O") && $("#1_1").hasClass("O") && $("#2_2").hasClass("O")) { $("#board").children().off(); win_o(); return}
+
+                                         if( $("#2_0").hasClass("X") && $("#1_1").hasClass("X") && $("#0_2").hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                         if( $("#2_0").hasClass("O") && $("#1_1").hasClass("O") && $("#0_2").hasClass("O")) { $("#board").children().off(); win_o(); return}                                                       
+                                     }
+                                     if ($("#size").val()== "4" ) {
+                                        for (var i = 0; i < k ;i++) {
+                                            if( $("#"+i+"_0").hasClass("X") && $("#"+i+"_1").hasClass("X") && $("#"+i+"_2").hasClass("X") && $("#"+i+"_3").hasClass("X")) { $("#board").children().off(); win_x();  return}
+                                            if( $("#"+i+"_0").hasClass("O") && $("#"+i+"_1").hasClass("O") && $("#"+i+"_2").hasClass("O") && $("#"+i+"_3").hasClass("O")) { $("#board").children().off(); win_o();  return}
+                                            if( $("#0_"+i).hasClass("O") && $("#1_"+i).hasClass("O") && $("#2_"+i).hasClass("O") && $("#3_"+i).hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                            if( $("#0_"+i).hasClass("X") && $("#1_"+i).hasClass("X") && $("#2_"+i).hasClass("X") && $("#3_"+i).hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                        }
+                                        if( $("#0_0").hasClass("X") && $("#1_1").hasClass("X") && $("#2_2").hasClass("X") && $("#3_3").hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                        if( $("#0_0").hasClass("O") && $("#1_1").hasClass("O") && $("#2_2").hasClass("O") && $("#3_3").hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                        if( $("#0_3").hasClass("X") && $("#1_2").hasClass("X") && $("#2_1").hasClass("X") && $("#3_0").hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                        if( $("#0_3").hasClass("O") && $("#1_2").hasClass("O") && $("#2_1").hasClass("O") && $("#3_0").hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                    }
+                                    if ($("#size").val()== "5" ) {
+                                        for (var i = 0; i < k ;i++) {
+                                            if( $("#"+i+"_0").hasClass("X") && $("#"+i+"_1").hasClass("X") && $("#"+i+"_2").hasClass("X") && $("#"+i+"_3").hasClass("X") && $("#"+i+"_4").hasClass("X")) { $("#board").children().off() ; win_x(); return}
+                                            if( $("#"+i+"_0").hasClass("O") && $("#"+i+"_1").hasClass("O") && $("#"+i+"_2").hasClass("O") && $("#"+i+"_3").hasClass("O") && $("#"+i+"_4").hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                            if( $("#0_"+i).hasClass("O") && $("#1_"+i).hasClass("O") && $("#2_"+i).hasClass("O") && $("#3_"+i).hasClass("O") && $("#4_"+i).hasClass("O")) { $("#board").children().off(); win_o(); return }
+                                            if( $("#0_"+i).hasClass("X") && $("#1_"+i).hasClass("X") && $("#2_"+i).hasClass("X") && $("#3_"+i).hasClass("X") && $("#4_"+i).hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                        }
+                                        if( $("#0_0").hasClass("X") && $("#1_1").hasClass("X") && $("#2_2").hasClass("X") && $("#3_3").hasClass("X") && $("#4_4").hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                        if( $("#0_0").hasClass("O") && $("#1_1").hasClass("O") && $("#2_2").hasClass("O") && $("#3_3").hasClass("O") && $("#4_4").hasClass("O")) { $("#board").children().off();win_o(); return}
+                                        if( $("#0_4").hasClass("X") && $("#1_3").hasClass("X") && $("#2_2").hasClass("X") && $("#3_1").hasClass("X") && $("#4_0").hasClass("X")) {  $("#board").children().off(); win_x(); return}
+                                        if( $("#0_4").hasClass("O") && $("#1_3").hasClass("O") && $("#2_2").hasClass("O") && $("#3_1").hasClass("O") && $("#4_0").hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                    }
+                                    if ($("#size").val()== "6" ) {
+                                        for (var i = 0; i < k ;i++) {
+                                            if( $("#"+i+"_0").hasClass("X") && $("#"+i+"_1").hasClass("X") && $("#"+i+"_2").hasClass("X") && $("#"+i+"_3").hasClass("X") && $("#"+i+"_4").hasClass("X") && $("#"+i+"_5").hasClass("X")) { $("#board").children().off() ; win_x(); return}
+                                            if( $("#"+i+"_0").hasClass("O") && $("#"+i+"_1").hasClass("O") && $("#"+i+"_2").hasClass("O") && $("#"+i+"_3").hasClass("O") && $("#"+i+"_4").hasClass("O") && $("#"+i+"_5").hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                            if( $("#0_"+i).hasClass("O") && $("#1_"+i).hasClass("O") && $("#2_"+i).hasClass("O") && $("#3_"+i).hasClass("O") && $("#4_"+i).hasClass("O") && $("#5_"+i).hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                            if( $("#0_"+i).hasClass("X") && $("#1_"+i).hasClass("X") && $("#2_"+i).hasClass("X") && $("#3_"+i).hasClass("X") && $("#4_"+i).hasClass("X") && $("#5_"+i).hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                        }
+                                        if( $("#0_0").hasClass("X") && $("#1_1").hasClass("X") && $("#2_2").hasClass("X") && $("#3_3").hasClass("X") && $("#4_4").hasClass("X") && $("#5_5").hasClass("X")) { $("#board").children().off(); win_x(); return}
+                                        if( $("#0_0").hasClass("O") && $("#1_1").hasClass("O") && $("#2_2").hasClass("O") && $("#3_3").hasClass("O") && $("#4_4").hasClass("O") && $("#5_5").hasClass("O")) { $("#board").children().off();win_o(); return}
+                                        if( $("#0_5").hasClass("X") && $("#1_4").hasClass("X") && $("#2_3").hasClass("X") && $("#3_2").hasClass("X") && $("#4_1").hasClass("X") && $("#5_0").hasClass("X")) {  $("#board").children().off(); win_x(); return}
+                                        if( $("#0_5").hasClass("O") && $("#1_4").hasClass("O") && $("#2_3").hasClass("O") && $("#3_2").hasClass("O") && $("#4_1").hasClass("O") && $("#5_0").hasClass("O")) { $("#board").children().off(); win_o(); return}
+                                    }
+                                    else if ($("#board").children().toArray().every(function(element){
+                                        return $(element).hasClass("X") || $(element).hasClass("O")
+                                    })) {
+                                        var remis = confirm("Remis! Od nowa?")
+                                        if (remis) {
+                                            $("#board").children().remove()
+                                            makegame()
+                                            color_stay()
+                                        }
+                                    }
+                                }
+                            })
+}
+}
+}
+})
+</script>
+</head>
+<body>
+    <div id="board" style="top:100px; opacity:0.9;"  ></div>
+    <button id="make" style="width:100%; height:40px;">od nowa</button><br />
+    <div style="width:50%; margin:0 auto;">
+    <select id="color" style="width:30%; height:40px;" >
+        <option value="white" style="background-color:white;">biały</option>
+        <option value="gray" style="background-color:gray;">szary</option>
+        <option value="green" style="background-color:green;">zielony</option>
+        <option value="blue" style="background-color:blue;">niebieski</option>
+    </select>
+    <select id="size" style="width:30%; height:40px;" >
+        <option value="3">3x3</option>
+        <option value="4">4x4</option>
+        <option value="5">5x5</option>
+        <option value="6">6x6</option>
+    </select>
+    <select id="need" style="width:30%; height:40px;">
+        <option value="1">do planszy</option>
+        <option value="2">do trzech</option>
+    </select>
+    </div>
+</body>
+</html>

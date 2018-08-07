@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+    <meta name="author" content="Sebastian Ogarek" />
+    <script type="text/javascript" src="jquery.js"></script>
+<script>
+ window.addEventListener("load", function () {
+    var map_obj = {}
+    map_obj.level = []
+function edytor(event){
+    if(event.target!==event.currentTarget) {  // MAGICZNY IF
+        var objects = document.getElementById('objects').value
+        event.target.className = objects;
+        var id = event.target.id.toString().split("_")
+        checkAndAdd(id[0], id[1], objects)
+
+        function search(nameKeyx, nameKeyy, myArray){
+            for (var i=0; i < myArray.length; i++) {
+                if (myArray[i].x === nameKeyx && myArray[i].y === nameKeyy) {
+                    var ret = [i, myArray[i]]
+                    return ret;
+                }
+            }
+        }
+        function checkAndAdd(x, y, objects) {
+            var found = map_obj.level.some(function (el) {
+                return el.x === x && el.y === y;
+            });
+            if (!found) {
+                var objects = document.getElementById('objects').value
+                var obj = {
+                    type: objects,
+                    x: id[0],
+                    y: id[1]
+                }
+                map_obj.level.push(obj)
+            }
+            if (found) {
+                var objects = document.getElementById('objects').value
+                var index = search(id[0],id[1], map_obj.level)
+                if (index[1].type != objects) {
+                    map_obj.level[index[0]].type = objects
+                };
+            };
+        }
+        }
+    }
+        var lvl_select = document.getElementById("map_size").addEventListener("change", make_plansza);
+         function make_plansza(){
+            $("#game_map").empty()
+            $("#level").empty()
+
+            value = document.getElementById("map_size").value
+            var div_map = document.getElementById("game_map")
+            map_obj.size = value;
+            for (var i = 0; i < value; i++) {
+                for (var j = 0; j < value; j++) {
+                    div = document.createElement("div");
+                    div.style.width = 50 +"px"
+                    div.style.height = 50 + "px"
+                    div.style.position = "absolute"
+                    div.style.border = "solid 1px black"
+                    div.style.top =50  * i  + "px"
+                    div.style.left = 400 + 50 * j  +"px"
+                    div.id =  j + "_" + i
+                    div_map.appendChild(div);
+                }
+            }
+        }
+        document.getElementById("game_map").addEventListener("mousedown", function(event){
+            // console.log(map_obj)
+            edytor(event)
+            var json = JSON.stringify(map_obj, null, 4)
+            document.getElementById('level').value = json;
+        })
+        document.getElementById("generuj").addEventListener("click", function(event){
+            $("#game_map").empty()
+            $("#level").empty()
+            var object = document.getElementById("level").value
+            edytor(event)
+            map_obj = JSON.parse(object)
+            value = map_obj.size
+            var div_map = document.getElementById("game_map")
+            for (var i = 0; i < value; i++) {
+                for (var j = 0; j < value; j++) {
+                    div = document.createElement("div");
+                    div.style.width = 50 +"px"
+                    div.style.height = 50 + "px"
+                    div.style.position = "absolute"
+                    div.style.border = "solid 1px black"
+                    div.style.top =50  * i  + "px"
+                    div.style.left = 400 + 50 * j  +"px"
+                    div.id =  j + "_" + i
+                    div_map.appendChild(div);
+                }
+            }
+            for (var i = 0; i < map_obj.level.length; i++) {
+                $("#"+map_obj.level[i].x+"_"+map_obj.level[i].y).attr("class",map_obj.level[i].type)
+            }
+            document.getElementById('level').value = object;
+
+        })
+})
+</script>
+<style type="text/css">
+    .wall{
+        background-color: black;
+    }
+    .enemy{
+        background-color: red;
+    }
+    .light{
+        background-color: yellow;
+
+    }
+    .item1{
+        background-color: green;
+    }
+    .item2{
+        background-color: blue;
+
+    }
+</style>
+</head>
+<body >
+                <select id="map_size">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                </select>
+
+                <select id="objects">
+                    <option id="wall" value="wall" style="background-color: black; width:40px;">wall</div>
+                    <option id="enemy" value="enemy" style="background-color: red; width: 40px;">enemy</div>
+                    <option id="item1" value="item1" style="background-color: green; width: 40px;">item1</div>
+                    <option id="item2" value="item2" style="background-color: blue; width: 40px;">item2</div>
+                    <option id="light" value="light" style="background-color: yellow; width: 40px;">light</div>
+                </select>
+                <div id="game_map"></div>
+              <!--   <div>treasure</div>
+                <div>light</div>
+                <div>item1</div>
+                <div>item2</div>
+                <div>delete</div> -->
+
+                <textarea type="text" id="level" style="width: 300px; height: 500px; color: white; background-color: black;"></textarea>
+                <input type="button" id="generuj" value="generuj z jsona">
+
+        </div>
+</body>
+</html>

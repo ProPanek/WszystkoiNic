@@ -1,0 +1,232 @@
+ body
+	   {
+			/*background:url('https://media.giphy.com/media/CHRDfd9Ocisso/giphy.gif') no-repeat center center fixed; */
+            /*background:url('http://www.wallpaperup.com/uploads/wallpapers/2014/01/25/237304/78be36998e887b3f71f99b34f74b6d6e.jpg') no-repeat center center fixed; 
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
+			font-family: 'Open Sans', sans-serif;
+			font-size:14px;
+			text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);*/
+             -webkit-transition: background   1.5s;
+            transition: background  1.5s;
+	   }
+        #lista_um_1{
+            -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+            margin-left: 1.5%;
+            margin-top: 2%;
+            display: inline-block;
+            text-align: right;
+            padding:1%;
+            height: 100%;
+            width: 10wv;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+        #lista_um_2{
+            -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+            margin-top: 2%;
+            display: inline-block;
+            text-align: right;
+            padding:1%;
+            height: 100%;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+         #lista_magii{
+             -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+            margin-top: 2%;
+            display: inline-block;
+            text-align: right;
+            padding:1%;
+            height: 100%;
+             -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+        #reg{
+            width: 910px;
+
+        }
+        #flex_2{
+            -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+            			border: 1px solid rgba(211, 84, 0,1.0);
+            width: 1210px;
+            margin: 0 auto;
+            /*display: flex;*/
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+        #flex_2 button{
+            margin: 5px;
+        }
+        #flex_2>*{
+            /*flex: 1;*/
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+        input{
+            width: 35px;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+        #lista_walki{
+            -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+            padding: 1%;
+            margin-top: 2%;
+            display: block;
+            position: absolute;
+            top: 200px;
+            right: 1.5%;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+        #wynik_kosci{
+            -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+            position: absolute;
+            text-align: center;
+            font-size:1.4em;
+            height: 25.5%;
+            width: 21%;
+            top: 200px;  
+            left: 40vw;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+
+
+        }
+       #custom_dice {
+           -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+	       position: absolute;
+           top: 740px;
+           right: 1.5%;
+           padding: 3px;
+           -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+           
+        }
+        #flex_1 {
+            -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+	       display: flex;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+		#zbroja
+		{
+            -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+            flex: 1;
+			margin-top:3px;
+            padding:1%;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+		}
+        #zbroja table{
+            width: 100%;
+             margin-left:auto; 
+            margin-right:auto;
+            text-align: center;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+        #zbroja_mod
+		{
+            -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+            flex: 1;
+			margin-top:3px;
+            padding:1%;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+		}
+        #zbroja_mod table{
+            
+            width: 100%;
+             margin-left:auto; 
+            margin-right:auto;
+            text-align: center;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+
+        }
+		.hover
+		{
+			-webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+		}
+		.hover:hover
+		{
+			-webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+		}
+        select{
+			font-family: 'Open Sans', sans-serif;
+ 			font-size:14px;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+     
+        }
+		input
+		{
+			border:0;
+			font-family: 'Open Sans', sans-serif;
+			font-size:14px;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+		}
+		button
+		{
+			border:0;
+			font-family: 'Open Sans', sans-serif;
+			font-size:14px;
+			-webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+		}
+		button:hover
+		{
+			-webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;	
+		}
+		h1
+		{
+			font-size:50px;
+			font-family: 'Metal Mania', cursive;
+			text-align:center;
+			-webkit-transition: color 1.5s;
+			transition: color 1.5s;	
+			margin-top:5px;
+		}
+		h1:hover
+		{
+			-webkit-transition: color 1.5s;
+			transition: color 1.5s;	
+		}
+        footer{
+            
+			font-weight:bold;
+
+            text-align: center;
+            -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+        }
+#cssPickerDiv {
+    -webkit-transition: border-color 1.5s;
+			transition: border-color 1.5s;
+    position: absolute;
+    	        margin-left: 4%;
+
+            padding: 0.5%;
+    display: inline-block;
+    -webkit-transition: background-color 1.5s;
+			transition: background-color 1.5s;
+
+}
+ 

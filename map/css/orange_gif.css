@@ -1,0 +1,122 @@
+body{			
+    	background:url('/art/giphy.gif') no-repeat center center fixed; 
+            /*background:url('/art/orange_background.jpg') no-repeat center center; */
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
+			color:rgba(236, 240, 241,1.0);
+
+			font-family: 'Open Sans', sans-serif;
+			font-size:14px;
+			text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+			
+}
+#lista_um_1{            
+    border: 1px solid rgba(211, 84, 0,1.0);        
+}
+        #lista_um_2{
+            border: 1px solid rgba(211, 84, 0,1.0);
+           
+        }
+         #lista_magii{
+            
+            border: 1px solid rgba(211, 84, 0,1.0);
+            
+        }
+        #flex_2{
+        	border: 1px solid rgba(211, 84, 0,1.0);
+        }
+        #lista_walki{
+         
+			border: 1px solid rgba(211, 84, 0,1.0);
+            
+        }
+        #wynik_kosci{
+            
+            border: 1px solid rgba(211, 84, 0,1.0);
+            background-color:rgba(211, 84, 0,0.7);
+        }
+       #custom_dice {
+           
+		   border: 1px solid rgba(211, 84, 0,1.0);
+          
+        }
+       
+		#zbroja
+		{
+            
+			border: 1px solid rgba(211, 84, 0,1.0);
+			
+		}
+       
+        #zbroja_mod
+		{
+			border: 1px solid rgba(211, 84, 0,1.0);
+		}
+		.hover
+		{
+			background-color:rgba(211, 84, 0,0.2);
+		}
+		.hover:hover
+		{
+			background-color:rgba(211, 84, 0,0.5);
+		}
+        select{
+           background-color:rgba(211, 84, 0,0.5);
+			border: 1px solid rgba(211, 84, 0,1.0);
+      			color:rgba(236, 240, 241,1.0);
+        }
+		input
+		{
+			background-color:rgba(211, 84, 0,0.7);
+			border:0;
+			color:rgba(236, 240, 241,1.0);
+			border: 1px solid rgba(211, 84, 0,1.0);
+		}
+		button
+		{
+			background-color:rgba(211, 84, 0,0.7);
+			border:0;
+			color:rgba(236, 240, 241,1.0);
+			border: 1px solid rgba(211, 84, 0,1.0);
+		}
+		button:hover
+		{
+			background-color:rgba(211, 84, 0,1.0);
+				
+		}
+		h1
+		{
+			
+			color:rgba(236, 240, 241,0.6);
+		}
+		h1:hover
+		{
+			color:rgba(236, 240, 241,1.0);
+		}
+        footer{
+            
+ 			background-color:rgba(211, 84, 0,0.8);
+			border: 1px solid rgba(211, 84, 0,1.0);
+        }
+#cssPickerDiv {
+    
+    			border: 1px solid rgba(211, 84, 0,1.0);
+    
+
+}
+#musicConPause{
+                        background-color:rgba(211, 84, 0,0.7);
+                        border: 1px solid rgba(211, 84, 0,1.0);
+
+        }
+        #musicConStart{
+                        background-color:rgba(211, 84, 0,0.7);
+                        border: 1px solid rgba(211, 84, 0,1.0);
+
+        }
+#MusicVolume{
+    background-color:rgba(211, 84, 0,0.7);
+                        border: 1px solid rgba(211, 84, 0,1.0);
+}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Memory</title>
+        <meta charset="utf-8">
+        <meta name="author" content="Sebastian Ogarek">
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.js"></script>
+        <script src="script.js"></script>  
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <style type="text/css">
+           
+        #czasDiv
+            {
+                width:400px;
+                height:20px;
+                border:1px solid black;
+                text-align:center;
+            }
+            
+            #czas
+            {
+                width:100%;
+                height:100%;
+                background-color: gray;
+                text-align:center;
+            }
+            #cyfry
+            {
+                width:400px;
+                height:100%;
+                text-align:center;
+            }
+        </style>
+         <script>
+        var app = angular.module("myApp", ["ngRoute"]);
+        app.config(function($routeProvider) {
+            $routeProvider
+            .when("/30", {
+                templateUrl : "plansza.html"
+            })
+            .when("/60", {
+                templateUrl : "plansza.html"
+            })
+            .when("/90", {
+                templateUrl : "plansza.html"
+            })
+            .when("/", {
+                templateUrl : "main.html"
+            })
+            .otherwise({
+                redirectTo: "/"
+            });
+        })
+        app.directive('gameField', function() {
+          return {
+            templateUrl : "pola.html"
+          }
+        });
+        app.directive('czas',['$location', '$interval','dateFilter', function($location, $interval, dateFilter) {
+            return{
+                templateUrl:"time.html",
+               
+                link: function(scope, element, attr){
+                    scope.time_const = $location.path().slice(-2);
+                    var time = $location.path().slice(-2);
+                    var getTime = dateFilter(new Date(), 'mm:ss:sss')
+                    var getMili = new Date().getTime();
+                    time = time + "000"
+                    time = parseInt(time)
+                    console.log(time)
+                            console.log(element.children())
+
+                    function timeLeft(){
+                        var actualTime=dateFilter(time-(new Date().getTime()-getMili), 'mm:ss:sss')
+                        if(time-(new Date().getTime()-getMili)<0){
+                            $interval.cancel(interval);
+                            element.children().children().text(dateFilter(0, 'mm:ss:sss'));
+                        }
+                        else{
+                            element.children().children().text(actualTime);
+                            var percent = ((time-(new Date().getTime()-getMili))/time)*100
+                            element.children().children().css('width',''+percent+'%');
+                            if (percent <= 20) {
+                                element.children().children().css('background-color','red');
+                            }
+                        }
+                    }
+                    var interval = $interval(timeLeft, 1)
+                }
+        };
+        }]);
+    
+        app.controller('MyCtrl1', ['$scope','$location', '$timeout', function($scope, $location, $timeout) {
+            
+        var puste = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+        var puzzles = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8];
+        /*for(var i = 0;i<puzzles.length;i++){
+            //Math.random();
+        }*/
+        function shuffle(a) {
+            var j, x, i;
+            for (i = a.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * (i + 1));
+                x = a[i];
+                a[i] = a[j];
+                a[j] = x;
+            }
+        }
+        shuffle(puzzles)
+        $scope.puste = puste;
+        $scope.puzzles = puzzles;
+
+        function getOpenIndexes(){
+            var open_indexes = []
+            for (var i = 0; i < puste.length; i++) {
+                if (puste[i] > 0){
+                    open_indexes.push(i)
+                }
+            }
+            return open_indexes
+        }
+            $scope.myFunc = function(index) {
+                //console.log(index);
+                if (puste[index] !== 0) {
+                    return
+                }
+                var open_indexes = getOpenIndexes()
+
+                if (open_indexes.length === 2) {
+                    puste[open_indexes[0]] = 0
+                    puste[open_indexes[1]] = 0
+                }
+
+                puste[index] = puzzles[index]
+                
+                open_indexes = getOpenIndexes()
+
+                if (open_indexes.length === 2) {
+                    console.log(open_indexes)
+                    if (puzzles[open_indexes[0]] == puzzles[open_indexes[1]] ) {
+                        console.log("takie same")
+                       puste[open_indexes[0]] = -1
+                       puste[open_indexes[1]] = -1
+
+                        if (puste.every(v => v === -1)) {
+                            alert("Wygrana!")
+                            for (var i = 0; i < puste.length; i++) {
+                                puste[i] = 0;
+                            }
+                        }
+                    }
+                    else{
+                        function setToZero(){
+                            puste[open_indexes[0]] = 0
+                            puste[open_indexes[1]] = 0
+                        }
+                        $timeout(setToZero, 500);
+                    }
+                }
+            };
+        }]);
+        </script>
+        
+    </head>
+    <body ng-app="myApp">
+        <div ng-view></div>
+       
+        </body>
+</html>
